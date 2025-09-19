@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}SignIn - {%endblock%}
+
+{%block content%}
+
+<div class="max-w-2xl mx-auto">
+    {%if userid%}
+    <div role="alert" class="alert alert-info mb-10">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-6 w-6 shrink-0 stroke-current">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span>Don't lose it! It's the only identifier you need to login. No email, no username. Just anonymity.
+            Do not share your account number with others.
+        </span>
+    </div>
+    <div class="card bg-base-200 dark:bg-base-300 border border-base-300 p-4">
+        <label class="label"> Your auto-generate ID</label>
+        <p class="text-5xl text-center my-4 font-mono">{{ userid }}</p>
+    </div>
+
+    <a href="{{url_for('user.profile')}}" class="link link-primary mt-4 inline-block">go to your profile</a>
+
+    {%else%}
+    <form action="" method="post">
+        <div class="card bg-base-200 dark:bg-base-300 border border-base-300 p-4">
+            <p class="p-6">Start by generating a random account ID. Once you click on the botton, your account will
+                get created. No need of email and username.</p>
+            <button class="btn btn-primary" type="submit" name="action" value="gen-id">Generate ID</button>
+        </div>
+    </form>
+    <a href="{{url_for('user.login')}}" class="link link-primary mt-4 inline-block">Login instead</a>
+
+    {%endif%}
+
+
+
+
+</div>
+
+
+
+
+{%endblock%}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+
+    <form action="{{ url_for('user.login') }}" method="post">
+        <fieldset class="fieldset bg-base-200 border-base-300 rounded-box border p-4 w-full mb-6">
+            <label class="label">Enter User ID</label>
+            <input class="input w-full py-8 font-mono text-5xl mx-0" type="text" name="userid">
+            <!-- <p class="text-6xl text-center my-4 font-[monospace]">{{ userid }}</p> -->
+            <button class="btn btn-primary my-4" type="submit">Submit</button>
+
+        </fieldset>
+    </form>
+    <a class="link mx-auto" href="{{url_for('user.signin')}}">SignIn instead</a>
+
+    {% if error%}
+    <div role="alert" class="alert alert-error">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>{{error}} <a class="link" href="{{url_for('user.signin')}}">SignIn instead</a></span>
+    </div>
+    {%endif%}
+</div>
+{% endblock %}

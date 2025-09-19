@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - {% endblock %}
+
+{% block content %}
+<div class="flex">
+
+    <div class="container mx-auto ">
+        {% if session %}
+        <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Hello User</h1>
+            <form method="post">
+                <button type="submit" name="action" value="logout" class="btn btn-primary">Logout</button>
+                <button type="submit" name="action" value="gen-api-key" class="btn btn-primary btn-outline">Gen API
+                    Key</button>
+            </form>
+        </div>
+
+        <div class="divider"></div>
+        {% else %}
+        <p>You haven't signed in yet.</p>
+        {% endif %}
+
+        {% if message %}
+        <div role="alert" class="alert alert-success mb-10">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{{message}}</span>
+        </div>
+        {% endif %}
+
+        {%if api_key%}
+        <div role="alert" class="alert alert-info">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                class="h-6 w-6 shrink-0 stroke-current">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Your API Key is here, store it in secure place. You won't able to retrive it again as the api is going
+                to store in in hash. If you forget your API key, delete and recreate it.</span>
+        </div>
+
+        <div class="card p-4 border border-primary-200 mt-10">
+            <span class="text-4xl font-mono">{{api_key}}</span>
+        </div>
+        {%endif%}
+
+        {% if results %}
+        <!-- |length > 0 -->
+        <div class="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
+            <table class="table w-full">
+                <thead class="bg-base-300">
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th>Route</th>
+                        <th>URL</th>
+                        <th>Created At</th>
+                        <th>Updated At</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                    <tr>
+
+                        <form method="post" name="edit-input" action="">
+                            <td>
+                                <input type="checkbox" class="checkbox" />
+                            </td>
+                            <td class="font-bold">{{loop.index0+results.first}}</td>
+                            <td>
+                                {{ result.route }}
+                                <input type="hidden" name="route" value="{{ result.route }}">
+                            </td>
+                            <td><input type="text" name="url" value="{{ result.url }}"
+                                    class="input input-bordered w-full">
+                            </td>
+                            <td>
+                                {{result.created_at}}
+                            </td>
+                            <td>
+                                {{result.updated_at}}
+                            </td>
+                            <td><button name="action" value="edit" type="submit"
+                                    class="btn btn-primary btn-outline">Edit</button></td>
+                        </form>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- pagination -->
+        <div class="join flex justify-center mt-10">
+            <form method="get">
+                <input type="hidden" name="limit" value="{{limit}}">
+                {% if results.has_prev %}
+                <button class="join-item btn btn-outline" type="submit" name="page" value="{{ results.prev_num }}">
+                    Previous
+                </button>
+                {% endif %}
+                {% if results.has_next %}
+                <button class="join-item btn btn-outline" type="submit" name="page" value="{{ results.next_num }}">
+                    Next
+                </button>
+                {% endif %}
+            </form>
+
+        </div>
+        {% endif %}
+
+        {% if api_keys %}
+        <div class="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 mt-10 mb-10">
+            <table class="table w-full">
+                <thead class="bg-base-300">
+                    <tr>
+                        <th></th>
+                        <th>Api Key</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for api_key in api_keys %}
+                    <tr>
+                        <th>{{loop.index}}</th>
+                        <form method="post" name="edit-input" action="">
+                            <td>
+                                {{ api_key }}
+                            </td>
+                        </form>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="alert alert-error mt-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{{ error }}</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

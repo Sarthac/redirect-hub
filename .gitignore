@@ -1,0 +1,8 @@
+__pycache__
+.venv
+.env
+database.db
+dev_database.db
+temp
+instance
+flask_session

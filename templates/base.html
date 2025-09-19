@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Create custom URL redirects and short links. Simple web service for managing URL redirections with database storage.">
+    <meta name="keywords" content="url, url-shortner, redirect">
+    <meta name="author" content="Sarthak Patil">
+    <title>{% block title %} {% endblock %}Redirect Hub</title>
+
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+</head>
+
+<body>
+    <div class="navbar bg-base-100">
+        <div class="navbar-start">
+            <a href="{{url_for('home.home_f')}}" class="btn btn-ghost text-xl">Redirect Hub</a>
+        </div>
+
+        {% block menu %}
+
+        {% endblock%}
+
+    </div>
+    <main>
+        {% block content%}
+        {%endblock%}
+    </main>
+</body>
+
+</html>

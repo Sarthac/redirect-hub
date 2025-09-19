@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{%block menu%}
+{% if not session.get("session_id", "")%}
+<div class="navbar-end">
+    <a href="{{ url_for('user.signin') }}" class="btn btn-primary">Sign In</a>
+</div>
+
+{%endif%}
+
+
+
+{% if session.get("session_id", "")%}
+<div class="navbar-end mr-4">
+    <div class="dropdown dropdown-end">
+        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+            <div class="w-10 rounded-full">
+                <img alt="Tailwind CSS Navbar component" src="{{url_for('static', filename='user.png')}}" />
+            </div>
+        </div>
+        <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+            <li>
+                <a href="{{url_for('user.profile')}}" class="justify-between">
+                    Profile
+                </a>
+            </li>
+            <!-- <li><a>Settings</a></li> -->
+        </ul>
+    </div>
+</div>
+
+{%endif%}
+{%endblock%}
+
+{% block content %}
+<div>
+    <div class="max-w-2xl mx-auto">
+
+        <form action="" method="post">
+            <fieldset class="fieldset bg-base-200 border-base-300 rounded-box border p-4 w-full  mb-6">
+                <label class="label"> Route</label>
+                <div class="flex content-around justify-between">
+                    <input value="{{route}}" type="text" name="route" placeholder="Enter the small and remeberable text"
+                        class="input w-full mr-4" />
+
+                    <button class="btn btn-primary btn-outline" name="action" value="generate"
+                        type="submit">Generate</button>
+                </div>
+
+                <label class="label">URL</label>
+                <input type="text" name="url" placeholder="Enter a Url" class="input w-full" />
+
+
+                <button class="btn btn-primary" name="action" value="submit" type="submit">Submit</button>
+            </fieldset>
+        </form>
+
+        {% if error %}
+        <div role="alert" class="alert alert-error">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{{error}}</span>
+        </div>
+        {%endif%}
+
+        {%if result%}
+        <div role="alert" class="alert alert-success">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{{result}}</span>
+        </div>
+        {%endif%}
+
+    </div>
+</div>
+
+
+
+
+
+{%endblock%}
