@@ -1,5 +1,4 @@
 from flask import Blueprint, redirect, render_template, abort
-from blueprints.home import get_db
 from helper.utils import forbiden_words
 from models.table import Redirect
 
@@ -16,5 +15,7 @@ def url_redirect(route):
             Redirect.query.with_entities(Redirect.url).filter_by(route=route).scalar()
         )
         if result is None:
-            return abort(404, description="Route does not exists.")
+            return render_template(
+                "error.html", error="Route does not exists.", code=404
+            )
         return redirect(result)

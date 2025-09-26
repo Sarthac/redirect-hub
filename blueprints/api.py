@@ -1,8 +1,9 @@
-from flask import Blueprint, request, jsonify, g
+from flask import Blueprint, request, jsonify, g, render_template
 from models.table import Redirect, User, Api
 from extensions import db
 from datetime import datetime
 from helper.utils import generate_route
+import markdown
 
 api = Blueprint("api", __name__, url_prefix="/api")
 
@@ -12,7 +13,7 @@ from models.table import Api
 @api.before_request
 def check_api_key():
     # Allow public routes (like /api/test) to skip auth
-    public_routes = ["/api/test"]
+    public_routes = ["/api/test", "/api"]
     if request.path in public_routes:
         return None
 
@@ -27,6 +28,14 @@ def check_api_key():
 
     # Store user info in Flask's "g" (global context for request)
     g.created_by = created_by
+
+
+@api.route("", methods=["GET"])
+def api_doc():
+    with open("docs/API.md", "r", encoding="utf-8") as f:
+        markdown_content = f.read()
+    html_content = markdown.markdown(markdown_content)
+    return render_template("api_doc.html", html_content=html_content)
 
 
 @api.route("/test", methods=["GET"])

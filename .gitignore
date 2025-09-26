@@ -6,3 +6,4 @@ dev_database.db
 temp
 instance
 flask_session
+node_modules

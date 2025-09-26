@@ -1,24 +1,9 @@
 from flask import g, Blueprint, request, render_template, session, current_app
-import sqlite3
 from helper.utils import forbiden_words, is_valid_url, generate_route
 from extensions import db
 from models.table import Redirect
 
 home = Blueprint("home", __name__)
-
-
-def get_db():
-    database = current_app.config["DATABASE_NAME"]
-    if "db" not in g:  # g is Flask's context for request
-        g.db = sqlite3.connect(database)
-        g.db.row_factory = sqlite3.Row  # rows behave like dictionaries
-    return g.db
-
-
-def close_db(error):
-    db = g.pop("db", None)
-    if db is not None:
-        db.close()
 
 
 @home.route("/", methods=["GET", "POST"])
@@ -60,7 +45,10 @@ def home_f():
                 )
                 print(result)
                 if result == None:
-                    id = session.get("id")
+                    if session:
+                        id = session.get("id")
+                    else:
+                        id = None
                     new_redirect = Redirect(route=route, url=url, created_by=id)
                     db.session.add(new_redirect)
                     db.session.commit()

@@ -9,10 +9,11 @@ class Config:
     ROUTE_GENERATE_LIMIT = 5
     API_KEY_LENGTH = 32
     ROUTE_PAGE_LIMIT = 20
+    MAX_API_PER_USER = 5
 
     HOST = "0.0.0.0"
     PORT = 5002
-    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+    COOKIE_AGE = (60 * 60 * 24) * 14
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
@@ -31,16 +32,8 @@ class DevelopmentConfig(Config):
 
     SQLALCHEMY_DATABASE_URI = f"sqlite:///{DATABASE_NAME}"
 
-    # SQLALCHEMY_DATABASE_URI = (
-    #     f"sqlite:///{os.path.join(Config.BASE_DIR, DATABASE_NAME)}"
-    # )
-
 
 class ProductionConfig(Config):
     DEBUG = False
     DATABASE_NAME = "database.db"
     SESSION_COOKIE_SECURE = True
-
-    # SQLALCHEMY_DATABASE_URI = (
-    #     f"sqlite:///{os.path.join(Config.BASE_DIR, DATABASE_NAME)}"
-    # )

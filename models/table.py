@@ -1,7 +1,6 @@
 from datetime import datetime
 from extensions import db
-from helper.hash import get_hash, check_hash
-from flask import jsonify
+from helper.hash import get_hash
 
 
 class Api(db.Model):
@@ -37,6 +36,7 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.String, unique=True, nullable=False)
+    total_api_keys = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.now)
 
     def __repr__(self):
@@ -60,9 +60,7 @@ class Redirect(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     route = db.Column(db.String, unique=True, nullable=False)
     url = db.Column(db.String, nullable=False)
-    created_by = db.Column(
-        db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False
-    )
+    created_by = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"))
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime)
 

@@ -1,0 +1,31 @@
+<html lang="en" {% if request.cookies.get("theme") %} data-theme="{{ request.cookies.get('theme') }}" {% endif %}>
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error</title>
+
+
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+
+<body>
+
+    <div class=" p-4 flex flex-col justify-center items-center h-screen">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 shrink-0 stroke-error" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        {% if code %}
+        <p class="mt-1">Error {{code}}</p>
+        {% endif %}
+        {% if error %}
+        <p class="font-bold mt-5">{{error}}</p>
+        {% endif %}
+    </div>
+
+</body>
+
+</html>

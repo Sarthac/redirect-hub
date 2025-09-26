@@ -6,9 +6,10 @@ from flask import (
     url_for,
     redirect,
     current_app,
+    make_response,
 )
 import random
-from helper.utils import user_exists, is_valid_url, gen_api_key
+from helper.utils import user_exists, gen_api_key
 from helper.hash import get_user_id_hash
 import secrets
 from models.table import Api
@@ -52,7 +53,7 @@ def validate_session() -> bool:
 @user.route("/signin", methods=["GET", "POST"])
 def signin():
     if validate_session():
-        return redirect(url_for("user.profile"))
+        return redirect(url_for("route_bp.routes"))
 
     if request.method == "POST":
         user_id = create_userid()
@@ -96,7 +97,7 @@ def login():
                 .first()
             )
             session["id"] = result[0]
-            return redirect(url_for("user.profile"))
+            return redirect(url_for("route_bp.routes"))
         else:
             return render_template("login.html", error="UserID does not exist.")
 
@@ -105,20 +106,14 @@ def login():
 
 @user.route("/profile", methods=["GET", "POST"])
 def profile():
-    if not validate_session():
+    action = request.form.get("action")
+    if session:
+        created_by = session["id"]
+    else:
         return redirect(url_for("user.login"))
 
-    # if request.method == "GET":
-    page = request.args.get("page", 1, type=int)
-    limit = request.args.get(
-        "limit", current_app.config.get("ROUTE_PAGE_LIMIT", 20), type=int
-    )
-
-    results = (
-        Redirect.query.filter_by(created_by=session["id"])
-        .order_by(Redirect.created_at.asc())
-        .paginate(page=page, per_page=limit, max_per_page=50, error_out=False)
-    )
+    # user_table object
+    user = User.query.filter_by(id=created_by).first()
 
     api_keys = [
         row[0]
@@ -127,56 +122,76 @@ def profile():
         .all()
     ]
 
-    if request.method == "POST":
-        route = request.form.get("route")
-        url = request.form.get("url")
-        action = request.form.get("action")
-        created_by = session["id"]
+    if action == "logout":
+        session.clear()
+        return redirect(url_for("user.login"))
 
-        if action == "edit" and url:
-            # checking if url is valid
-            if not is_valid_url(url):
-                return render_template(
-                    "profile.html",
-                    session=session.get("session_id"),
-                    results=results,
-                    api_keys=api_keys,
-                    error="URL is not valid",
-                    limit=limit,
-                )
-                # return url_for("user.profile", error="URL is not valid")
-            new_url = Redirect.query.filter(
-                (Redirect.route == route) & (Redirect.created_by == created_by)
-            ).first()
-            if new_url:
-                new_url.url = url
-                new_url.updated_at = datetime.now()
-                db.session.commit()
-                return render_template(
-                    "profile.html",
-                    results=results,
-                    api_keys=api_keys,
-                    limit=limit,
-                    message="Success, URL Updated.",
-                )
-
-        if action == "logout":
-            session.clear()
-            return redirect(url_for("user.login"))
-
-        if action == "gen-api-key":
+    if action == "gen-api-key":
+        # checking if the user already created enough api_keys
+        if user.total_api_keys < current_app.config.get("MAX_API_PER_USER", 5):
+            # incrementaing to 1
+            user.total_api_keys += 1
+            # generating
             api_key = gen_api_key()
-            print(api_key)
+            # hashing
             hash_api = get_user_id_hash(api_key)
+            # adding to api_table
             api = Api(api_key=hash_api, created_by=created_by)
+            # commiting change in bot api_table and user_table
+            # db.session.add(user)
             db.session.add(api)
             db.session.commit()
-            return render_template("profile.html", api_key=api_key)
+        else:
+            return render_template(
+                "profile.html",
+                api_keys=api_keys,
+                error=f"You can create up to {current_app.config.get('MAX_API_PER_USER', 5)} API keys in total.",
+            )
+        db.session.commit()
+        return render_template("profile.html", api_key=api_key)
+
+    if request.form.get("delete_api"):
+        api_key = request.form.get("delete_api")
+        api = Api.query.filter_by(api_key=api_key, created_by=created_by).first()
+        if not api:
+            return render_template(
+                "profile.html",
+                api_key=api_key,
+                error="API key does not exist or you don't own it.",
+            )
+        db.session.delete(api)
+        user.total_api_keys -= 1
+        db.session.commit()
+        return redirect(url_for("user.profile"))
 
     return render_template(
         "profile.html",
         session=session.get("session_id"),
-        results=results,
         api_keys=api_keys,
-        limit=limit,
     )
+
+
+@user.route("/settings", methods=["GET"])
+def settings():
+    if request.args.get("settings") == "save":
+        theme = request.args.get("theme", "auto")
+        limit = request.args.get(
+            "limit", current_app.config.get("ROUTE_PAGE_LIMIT"), type=int
+        )
+
+        resp = make_response(redirect(url_for("user.settings")))
+        resp.set_cookie(
+            "theme",
+            theme,
+            max_age=current_app.config.get("COOKIE_AGE", (60 * 60 * 24) * 14),
+        )
+        resp.set_cookie(
+            "limit",
+            str(limit),
+            max_age=current_app.config.get("COOKIE_AGE", (60 * 60 * 24) * 14),
+        )
+        return resp
+    theme = request.cookies.get("theme")
+    limit = request.cookies.get("limit")
+
+    return render_template("settings.html", theme=theme, limit=limit)

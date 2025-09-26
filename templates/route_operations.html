@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - {% endblock %}
+
+{% block content %}
+
+<div class="max-w-2xl mx-auto">
+
+    {%if route%}
+
+    <form action="" method="post">
+        <fieldset class="fieldset">
+
+            <!-- route -->
+            <label class="label block">Route</label>
+            <div class="flex items-center gap-2">
+                <!-- Editable input (disabled + hidden by default) -->
+                <input class="input w-full hidden" type="text" name="route" value="{{route.route}}" disabled>
+
+                <!-- Static text -->
+                <p class="text-base">{{route.route}}</p>
+
+                <!-- Edit button -->
+                <button type="button" onclick="
+              const input = this.parentNode.querySelector('input');
+              const text = this.parentNode.querySelector('p');
+              input.classList.remove('hidden');
+              input.disabled = false;
+              text.classList.add('hidden');
+              input.focus();
+              this.style.display = 'none';
+            " class="btn btn-ghost w-fit">
+                    Edit
+                </button>
+            </div>
+
+            <!-- url -->
+            <label class="label block">URL</label>
+            <div class="flex items-center gap-2">
+                <!-- Editable input (disabled + hidden by default) -->
+                <input class="input w-full hidden" type="text" name="url" value="{{route.url}}" disabled>
+
+                <!-- Static text -->
+                <p class="text-base">{{route.url}}</p>
+
+                <!-- Edit button -->
+                <button type="button" onclick="
+              const input = this.parentNode.querySelector('input');
+              const text = this.parentNode.querySelector('p');
+              input.classList.remove('hidden');
+              input.disabled = false;
+              text.classList.add('hidden');
+              input.focus();
+              this.style.display = 'none';
+            " class="btn btn-ghost w-fit">
+                    Edit
+                </button>
+            </div>
+
+            <!-- created at -->
+            <label class="label block">Created At</label>
+            <p>{{route.created_at}}</p>
+
+            <!-- save -->
+            <button type="submit" name="action" value="save" class="btn btn-primary mt-4">Save</button>
+            <button type="submit" name="action" value="delete" class="btn btn-primary mt-4">Delete</button>
+
+
+        </fieldset>
+    </form>
+
+
+
+    {%endif%}
+
+
+    {%if error %}
+
+    <div role="alert" class="alert alert-error mt   -5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>{{error}}</span>
+    </div>
+
+    {%endif%}
+
+    {%if success %}
+    <div role="alert" class="alert alert-success">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>{{success}}</span>
+    </div>
+    {%endif%}
+</div>
+
+{% endblock%}

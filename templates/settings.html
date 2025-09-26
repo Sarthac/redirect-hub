@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="max-w-2xl mx-auto ">
+    <form method="get" action="">
+        <div class="card bg-base-200 border border-base-300 mt-5 p-5 flex flex-row justify-between items-center">
+            <span>Theme</span>
+            <select class="select w-auto" name="theme">
+                <option disabled selected>Pick a color</option>
+                <option {%if theme=='light' %} selected {%endif%}>light</option>
+                <option {%if theme=='dark' %} selected {%endif%}>dark</option>
+                <option {%if theme=='caramellatte' %} selected {%endif%}>caramellatte</option>
+                <option {%if theme=='cupcake' %} selected {%endif%}>cupcake</option>
+                <option {%if theme=='bumblebee' %} selected {%endif%}>bumblebee</option>
+                <option {%if theme=='emerald' %} selected {%endif%}>emerald</option>
+                <option {%if theme=='corporate' %} selected {%endif%}>corporate</option>
+                <option {%if theme=='retro' %} selected {%endif%}>retro</option>
+                <option {%if theme=='cyberpunk' %} selected {%endif%}>cyberpunk</option>
+                <option {%if theme=='valentine' %} selected {%endif%}>valentine</option>
+                <option {%if theme=='garden' %} selected {%endif%}>garden</option>
+                <option {%if theme=='lofi' %} selected {%endif%}>lofi</option>
+                <option {%if theme=='luxury' %} selected {%endif%}>luxury</option>
+                <option {%if theme=='business' %} selected {%endif%}>business</option>
+                <option {%if theme=='coffee' %} selected {%endif%}>coffee</option>
+                <option {%if theme=='sunset' %} selected {%endif%}>sunset</option>
+                <option {%if theme=='abyss' %} selected {%endif%}>abyss</option>
+                <option {%if theme=='dim' %} selected {%endif%}>dim</option>
+
+            </select>
+        </div>
+
+
+        <div class="card bg-base-200 border border-base-300 mt-5 p-5 flex flex-row justify-between items-center">
+            <span>Routes per page</span>
+            <div>
+                <input name="limit" type="number" class="input validator" required {%if limit %}value={{limit}} {%else%}
+                    value="20" {%endif %} placeholder="Type a number between 1 to 50" min="1" max="50"
+                    title="Must be between be 1 to 50" />
+                <p class="validator-hint">Must be between be 1 to 50</p>
+            </div>
+        </div>
+
+        <button class="mt-5 btn btn-primary" name="settings" value="save" type="submit">Save</button>
+    </form>
+
+
+</div>
+
+{% endblock %}

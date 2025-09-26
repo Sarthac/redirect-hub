@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" {% if request.cookies.get("theme") %} data-theme="{{ request.cookies.get('theme') }}" {% endif %}>
 
 <head>
     <meta charset="UTF-8">
@@ -14,26 +14,50 @@
     <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
 
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-
 </head>
 
 <body>
-    <div class="navbar bg-base-100">
-        <div class="navbar-start">
-            <a href="{{url_for('home.home_f')}}" class="btn btn-ghost text-xl">Redirect Hub</a>
+
+    <div class="drawer lg:drawer-open">
+        <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
+        <div class="drawer-content flex-col items-center justify-center ">
+
+            <label for="my-drawer-2" class="lg:hidden">
+                <svg class="ml-2 mt-2" style="width:24px;height:24px" viewBox="0 0 20 20">
+                    <path fill="currentColor" d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
+                </svg>
+
+
+            </label>
+            <!-- Page content here -->
+            <main class="px-3 py-5">
+                {% block content%}
+                {%endblock%}
+            </main>
+
         </div>
+        <div class="drawer-side">
+            <label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay"></label>
 
-        {% block menu %}
+            <ul class="menu bg-base-200 text-base-content min-h-full w-80 p-4">
+                <!-- Sidebar content here -->
+                <div>
+                    <div>
+                        <li><a class="text-xl lg:text-base" href="{{url_for('home.home_f')}}">Home</a></li>
+                        <li><a class="text-xl lg:text-base" href="{{url_for('route_bp.routes')}}">Routes</a></li>
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-full p-4">
+                        <div class="divider"></div>
+                        <li><a class="text-xl lg:text-base" href="{{url_for('api.api_doc')}}">API</a></li>
+                        <li><a class="text-xl lg:text-base" href="{{url_for('user.profile')}}">User Profile</a></li>
+                        <li><a class="text-xl lg:text-base" href="{{url_for('user.settings')}}">Settings</a></li>
 
-        {% endblock%}
-
+                    </div>
+                </div>
+            </ul>
+        </div>
     </div>
-    <main>
-        {% block content%}
-        {%endblock%}
-    </main>
+
 </body>
 
 </html>

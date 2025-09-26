@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - {% endblock %}
+
+{% block content %}
+<div class="flex">
+
+    <div class="container mx-auto ">
+        {% if message %}
+        <div role="alert" class="alert alert-success mb-10">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{{message}}</span>
+        </div>
+        {% endif %}
+
+        {% if results %}
+        <!-- |length > 0 -->
+        <div class="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
+            <table class="table w-full">
+                <thead class="bg-base-300">
+                    <tr>
+                        <!-- <th></th> -->
+                        <th></th>
+                        <th>Route</th>
+                        <th>URL</th>
+                        <th>Created At</th>
+                        <th>Updated At</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                    <tr>
+
+                        <form method="post" name="edit-input" action="">
+                            <!-- <td>
+                                <input type="checkbox" class="checkbox" />
+                            </td> -->
+                            <td class="font-bold">{{loop.index0+results.first}}</td>
+                            <td>
+                                {{ result.route }}
+                            </td>
+                            <td class="">
+                                {{ result.url }}
+                            </td>
+                            <td>
+                                {{result.created_at}}
+                            </td>
+                            <td>
+                                {{result.updated_at}}
+                            </td>
+                            <td><a class="btn btn-primary btn-outline"
+                                    href="{{url_for('route_bp.unique_route', route=result.route)}}">Edit</a>
+                            </td>
+                        </form>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- pagination -->
+        <div class="join flex justify-center mt-10">
+            <form method="get">
+                <input type="hidden" name="limit" value="{{limit}}">
+                {% if results.has_prev %}
+                <button class="join-item btn btn-outline" type="submit" name="page" value="{{ results.prev_num }}">
+                    Previous
+                </button>
+                {% endif %}
+                {% if results.has_next %}
+                <button class="join-item btn btn-outline" type="submit" name="page" value="{{ results.next_num }}">
+                    Next
+                </button>
+                {% endif %}
+            </form>
+
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="alert alert-error mt-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{{ error }}</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
