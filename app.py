@@ -5,6 +5,8 @@ from flask_session import Session
 from config import DevelopmentConfig, ProductionConfig
 from extensions import db
 
+# for cloudflare tunnel setup, My ISP does not allow port forwarding.
+# from werkzeug.middleware.proxy_fix import ProxyFix
 
 from blueprints.redirect_bp import redirect_bp
 from blueprints.home import home
@@ -13,8 +15,11 @@ from blueprints.api import api
 from blueprints.routes import route_bp
 
 app = Flask(__name__)
-load_dotenv()
 
+# for cloudflare tunnel setup.
+# app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
+load_dotenv()
 
 env = os.environ.get("FLASK_ENV")
 
@@ -23,12 +28,8 @@ if env == "development":
 else:
     app.config.from_object(ProductionConfig)
 
-
 Session(app)
 db.init_app(app)
-with app.app_context():
-    db.create_all()
-
 
 app.register_blueprint(redirect_bp)
 app.register_blueprint(home)

@@ -1,8 +1,8 @@
-from flask import Blueprint, request, jsonify, g, render_template
-from models.table import Redirect, User, Api
+from flask import Blueprint, request, jsonify, g, render_template, current_app
+from models.table import Redirect, Api
 from extensions import db
 from datetime import datetime
-from helper.utils import generate_route
+from helper.utils import generate_route, is_valid_url, is_valid_route
 import markdown
 
 api = Blueprint("api", __name__, url_prefix="/api")
@@ -104,7 +104,30 @@ def routes():
             if not url:
                 return (jsonify({"error": "'url' are required"}), 400)
 
+            if url and not is_valid_url(url):
+                return jsonify({"error": "url is not valid."}), 400
+
             if route:
+                if not is_valid_route(route):
+                    return (
+                        jsonify(
+                            {
+                                "error": "route is not valid, route only contain letters, digits, '-' and '_' "
+                            }
+                        ),
+                        400,
+                    )
+
+                if route in current_app.config["FORBIDEN_ROUTES"]:
+                    return (
+                        jsonify(
+                            {
+                                "error": f"Cannot register route using “{route}” because “{route}” is already reserved by an existing route in this application; choose a different route."
+                            }
+                        ),
+                        400,
+                    )
+
                 if Redirect.route_exists(route):
                     return (
                         jsonify(

@@ -1,14 +1,8 @@
 import validators
 from flask import session, request, current_app
 import secrets
-from extensions import db
 from models.table import User
-
-
-def forbiden_words(route: str) -> bool:
-    list_of_routes = ["home", "signin", "login", "profile", "settings", "api", "github"]
-    return route in list_of_routes
-
+import string
 
 def user_exists(user_id: str) -> bool:
     existing_user = (
@@ -20,6 +14,14 @@ def user_exists(user_id: str) -> bool:
 
 def is_valid_url(url: str) -> bool:
     return validators.url(url) is True
+
+
+def is_valid_route(route: str) -> bool:
+    valid_chars = string.ascii_letters + string.digits + "-_"
+    for char in route:
+        if char not in valid_chars:
+            return False
+    return True
 
 
 def gen_api_key():

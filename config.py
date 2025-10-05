@@ -1,10 +1,39 @@
 import os
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 class Config:
-    PROJECT_NAME = "Unknown"
+    PROJECT_NAME = "redirect-hub"
     DATABASE_NANE = "database.db"
-    forbiden_routes = ["signin", "login", "profile"]
+    FORBIDEN_ROUTES = [
+        "home",
+        "register",
+        "signin",
+        "signup",
+        "signout",
+        "login",
+        "logout",
+        "profile",
+        "account",
+        "user",
+        "about",
+        "setting",
+        "settings",
+        "api",
+        "github",
+        "tor",
+        "i2p",
+    ]
+
+    LINKS = {
+        "tor": "http://ylmkenmpxk7dpcv5seu4kaom5e2ulhnieylpgvafj27wgocdwyx4n6ad.onion",
+        "i2p": "http://vgit4qh3acgqrg6fc4o4tiezef22yfmmvpjsd4nn7lztvw3z3lwa.b32.i2p",
+        "github": "https://github.com/sarthac/redirect-hub",
+    }
+
     GENERATE_ROUTE_LENGTH = 5
     ROUTE_GENERATE_LIMIT = 5
     API_KEY_LENGTH = 32
@@ -18,7 +47,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # session config
-    SECRET_KEY = os.environ.get("SECRET_KEY")
+    SECRET_KEY = os.environ["SECRET_KEY"]
     SESSION_TYPE = "filesystem"
     SESSION_PERMANENT = True  # session ends when browser closes
     SESSION_USE_SIGNER = True  # sign the session ID cookie
@@ -29,11 +58,11 @@ class Config:
 class DevelopmentConfig(Config):
     DEBUG = True
     DATABASE_NAME = "dev_database.db"
-
     SQLALCHEMY_DATABASE_URI = f"sqlite:///{DATABASE_NAME}"
 
 
 class ProductionConfig(Config):
     DEBUG = False
     DATABASE_NAME = "database.db"
+    SQLALCHEMY_DATABASE_URI = f"sqlite:///{DATABASE_NAME}"
     SESSION_COOKIE_SECURE = True

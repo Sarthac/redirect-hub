@@ -10,7 +10,7 @@ from flask import (
 )
 import random
 from helper.utils import user_exists, gen_api_key
-from helper.hash import get_user_id_hash
+from helper.hash import get_user_id_hash, get_hash
 import secrets
 from models.table import Api
 from extensions import db
@@ -107,7 +107,7 @@ def login():
 @user.route("/profile", methods=["GET", "POST"])
 def profile():
     action = request.form.get("action")
-    if session:
+    if "id" in session:
         created_by = session["id"]
     else:
         return redirect(url_for("user.login"))
@@ -115,17 +115,18 @@ def profile():
     # user_table object
     user = User.query.filter_by(id=created_by).first()
 
-    api_keys = [
-        row[0]
-        for row in Api.query.with_entities(Api.api_key)
-        .filter(Api.created_by == session.get("id"))
-        .all()
-    ]
+    api_keys = Api.get_user_api_keys(created_by)
 
+    # -----------------
+    # User log out
+    # -----------------
     if action == "logout":
         session.clear()
         return redirect(url_for("user.login"))
 
+    # -----------------
+    # Generate Api key
+    # -----------------
     if action == "gen-api-key":
         # checking if the user already created enough api_keys
         if user.total_api_keys < current_app.config.get("MAX_API_PER_USER", 5):
@@ -148,8 +149,15 @@ def profile():
                 error=f"You can create up to {current_app.config.get('MAX_API_PER_USER', 5)} API keys in total.",
             )
         db.session.commit()
-        return render_template("profile.html", api_key=api_key)
 
+        # re-calling get_user_api_keys for updated keys
+        api_keys = Api.get_user_api_keys(created_by)
+
+        return render_template("profile.html", api_key=api_key, api_keys=api_keys)
+
+    # -----------------
+    # Delete api key
+    # -----------------
     if request.form.get("delete_api"):
         api_key = request.form.get("delete_api")
         api = Api.query.filter_by(api_key=api_key, created_by=created_by).first()
@@ -163,6 +171,27 @@ def profile():
         user.total_api_keys -= 1
         db.session.commit()
         return redirect(url_for("user.profile"))
+
+    # -----------------
+    # Delete User
+    # -----------------
+    if action == "delete-user":
+        user_id = request.form.get("userid")
+        if user_id:
+            hash = get_hash(user_id)
+            user = User.query.filter_by(user_id=hash).first()
+            print(user_id)
+            print(hash)
+            print(user)
+            if user:
+                print(user)
+                db.session.delete(user)
+                db.session.commit()
+                session.clear()
+                return redirect(url_for("user.login"))
+
+            else:
+                render_template("profile.html", error="user not found.")
 
     return render_template(
         "profile.html",

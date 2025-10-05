@@ -1,5 +1,5 @@
-from flask import g, Blueprint, request, render_template, session, current_app
-from helper.utils import forbiden_words, is_valid_url, generate_route
+from flask import Blueprint, request, render_template, session, current_app
+from helper.utils import is_valid_url, is_valid_route, generate_route
 from extensions import db
 from models.table import Redirect
 
@@ -24,18 +24,21 @@ def home_f():
 
     if action == "submit":
         if route and url:
-            if forbiden_words(route):
+            if route in current_app.config["FORBIDEN_ROUTES"]:
                 return render_template(
                     "index.html",
-                    result=f"Cannot register route using “{route}” because “{route}” is already reserved by an existing route in this application; choose a different parameter name.",
+                    error=f"Cannot register route using “{route}” because “{route}” is already reserved by an existing route in this application; choose a different parameter name.",
                 )
             else:
                 # checking if url is valid
                 if not is_valid_url(url):
                     return render_template("index.html", error="URL is not valid")
 
-                if not route.isalnum():
-                    return render_template("index.html", error="Route is not valid")
+                if not is_valid_route(route):
+                    return render_template(
+                        "index.html",
+                        error="Route is not valid, route only containing letters, digits, '-', '_' are valid",
+                    )
 
                 # checking if the route is already exist or not. every route should be unique.
                 result = (
@@ -43,7 +46,6 @@ def home_f():
                     .filter_by(route=route)
                     .first()
                 )
-                print(result)
                 if result == None:
                     if session:
                         id = session.get("id")

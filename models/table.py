@@ -9,7 +9,7 @@ class Api(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     api_key = db.Column(db.String, unique=True, nullable=False)
     created_by = db.Column(
-        db.String, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False
+        db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False
     )
     created_at = db.Column(db.DateTime, default=datetime.now)
 
@@ -20,6 +20,14 @@ class Api(db.Model):
         db.session.delete(self)
         db.session.commit()
         return True
+
+    @classmethod
+    def get_user_api_keys(cls, created_by: int):
+        return (
+            cls.query.filter(cls.created_by == created_by)
+            .order_by(cls.created_at.desc())
+            .all()
+        )
 
     @classmethod
     def get_api_id(cls, api_key: str):
