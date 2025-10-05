@@ -6,4 +6,4 @@
 
 ## Documentation
 - [API Reference](docs/API.md)
-- [Setup](docs/SETUP.md)
+- [Setup](docs/setup.md)
